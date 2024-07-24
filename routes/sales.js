@@ -59,18 +59,21 @@ router.post("/",
     })  
   })
 });
-router.get("/:id", (req, res, next) => {
-  console.log(req.params.id);
-  Sale.findById(req.params.id).then(result=>{
-res.status(200).json({
-    sales:result
-})
-  }).catch(err=>{
-    console.log(err);
-    res.status(500).json({
-        error:err
+router.get("/:id", (req, res) => {
+  const id = req.params.id; // Extract the id from the URL parameter
+  console.log('Received ID:', id);
+  
+  Sale.findById(id)
+    .then(result => {
+      if (!result) {
+        return res.status(404).json({ message: 'Sale not found' });
+      }
+      res.status(200).json({ sales: result });
     })
-  })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({ error: err });
+    });
 });
 router.delete('/:id',(req,res,next)=>{
 Sale.remove({_id:req.params.id})
