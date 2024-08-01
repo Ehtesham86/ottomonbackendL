@@ -4,8 +4,11 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { check, validationResult } = require('express-validator');
 
-const { User } = require('../models/users');
+const User = require('../models/users');
 
+// @route    POST api/users
+// @desc     Register user
+// @access   Public
 router.post(
   '/',
   [
@@ -20,7 +23,6 @@ router.post(
     }
 
     const { userType, firstName, lastName, username, email, password } = req.body;
-    console.log(req.body);
 
     try {
       let user = await User.findOne({ email });
@@ -54,15 +56,12 @@ router.post(
         process.env.ACCESS_TOKEN_SECRET,
         { expiresIn: 360000 },
         (err, token) => {
-          if (err) {
-            console.error('JWT Sign Error:', err);
-            throw err;
-          }
+          if (err) throw err;
           res.json({ token });
         }
       );
     } catch (err) {
-      console.error('Server Error:', err.message);
+      console.error(err.message);
       res.status(500).send('Server error');
     }
   }
